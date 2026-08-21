@@ -10,7 +10,7 @@ const supabaseKey = 'your-anon-key';
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 
-);
+
 
 console.log("Supabase connected");
 
