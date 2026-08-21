@@ -5,7 +5,7 @@
 const supabaseUrl = 'https://cesffaiaxrwoomuttlza.supabase.co'; 
 const supabaseKey = 'sb_publishable_QOFPHVDAgI2dNr977BREvw_ga_HMzuE';
 
-// Renamed variable to 'sb' so it matches all your calls (sb.from) below
+// Change 'const supabase =' to 'const sb ='
 const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
 console.log("Supabase connected");
