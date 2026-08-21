@@ -1,0 +1,229 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #1e293b;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 900px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 30px;
+    font-size: 3rem;
+}
+
+.scoreboard {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.team-card {
+    background: #334155;
+    padding: 30px;
+    border-radius: 16px;
+    min-width: 300px;
+}
+
+.team-card h2 {
+    margin-bottom: 20px;
+}
+
+.score {
+    font-size: 6rem;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    font-size: 1.3rem;
+    transition: 0.2s;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.add-btn {
+    background: #22c55e;
+    color: white;
+    width: 70px;
+    height: 70px;
+}
+
+.subtract-btn {
+    background: #ef4444;
+    color: white;
+    width: 70px;
+    height: 70px;
+}
+
+.reset-btn {
+    margin-top: 30px;
+    padding: 15px 30px;
+    background: #3b82f6;
+    color: white;
+}
+
+/* General Page Styling */
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f6f9;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100vh;
+}
+
+/* Login Card */
+
+.login-card {
+    background: white;
+    width: 350px;
+    padding: 30px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+    text-align: center;
+}
+
+/* Heading */
+
+.login-card h1 {
+    margin-bottom: 25px;
+    color: #222;
+}
+
+/* Inputs */
+
+.login-card input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+
+    border: 1px solid #ccc;
+    border-radius: 6px;
+
+    box-sizing: border-box;
+
+    font-size: 16px;
+}
+
+/* Buttons */
+
+.login-card button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+/* Login Button */
+
+.login-card button:first-of-type {
+    background: #0066ff;
+    color: white;
+}
+
+.login-card button:first-of-type:hover {
+    background: #0052cc;
+}
+
+/* Guest Button */
+
+.login-card button:last-of-type {
+    background: #e5e5e5;
+    color: #333;
+}
+
+.login-card button:last-of-type:hover {
+    background: #d6d6d6;
+}
+
+/* Status Message */
+
+#message {
+    margin-top: 15px;
+    min-height: 20px;
+    font-weight: bold;
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+
+    .login-card {
+        width: 90%;
+        padding: 20px;
+    }
+
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: #0066ff;
+    color: white;
+
+    padding: 12px 20px;
+}
+
+.nav-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.logout-btn {
+    background: white;
+    color: #0066ff;
+
+    border: none;
+    border-radius: 6px;
+
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.logout-btn:hover {
+    background: #f2f2f2;
+}
