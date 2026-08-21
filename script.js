@@ -20,8 +20,9 @@ async function login() {
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
 
+    // Changed "Users" to "USERS" to match the Supabase schema cache
     const { data, error } = await sb
-        .from("Users")
+        .from("USERS") 
         .select("*")
         .eq("username", username);
 
@@ -35,12 +36,14 @@ async function login() {
 
     const user = data[0];
 
+    // NOTE: Ensure your database column is exactly "Password" (case-sensitive)
     if (user.Password === password) {
         alert("Login OK");
 
         sessionStorage.setItem("userId", user.id);
         sessionStorage.setItem("username", user.username);
-        sessionStorage.setItem("name", user.Name);
+        // Ensure "Name" matches the database column case as well
+        sessionStorage.setItem("name", user.Name); 
 
         window.location.href = "scorer.html";
     } else {
