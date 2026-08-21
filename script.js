@@ -6,7 +6,7 @@
 const SUPABASE_KEY = "sb_publishable_QOFPHVDAgI2dNr977BREvw_ga_HMzuE";*/
 
 const supabaseUrl = 'https://cesffaiaxrwoomuttlza.supabase.co'; // NO /rest/v1 at the end!
-const supabaseKey = 'your-anon-key';
+const supabaseKey = 'sb_publishable_QOFPHVDAgI2dNr977BREvw_ga_HMzuE';
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 
