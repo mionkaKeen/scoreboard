@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volleyball Scorer</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+    <div class="nav-title">
+        🏐 Volleyball Scorer
+    </div>
+
+    <button class="logout-btn" onclick="logout()">
+        Logout
+    </button>
+</nav>
+
+    <div class="container">
+
+        <h1>🏐 Volleyball Scorer</h1>
+
+        <div class="scoreboard">
+
+            <div class="team-card">
+
+                <h2>Team A</h2>
+
+                <div id="scoreA" class="score">0</div>
+
+                <div class="button-group">
+                    <button class="add-btn" onclick="changeScore('A', 1)">+</button>
+                    <button class="subtract-btn" onclick="changeScore('A', -1)">−</button>
+                </div>
+
+            </div>
+
+            <div class="team-card">
+
+                <h2>Team B</h2>
+
+                <div id="scoreB" class="score">0</div>
+
+                <div class="button-group">
+                    <button class="add-btn" onclick="changeScore('B', 1)">+</button>
+                    <button class="subtract-btn" onclick="changeScore('B', -1)">−</button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <button class="reset-btn" onclick="resetScores()">
+            Reset Match
+        </button>
+
+        <button class="reset-btn" onclick   </button>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
