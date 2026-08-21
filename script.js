@@ -2,15 +2,11 @@
 // Supabase Connection
 // =========================
 
-/*const SUPABASE_URL = "https://cesffaiaxrwoomuttlza.supabase.co/rest/v1/";
-const SUPABASE_KEY = "sb_publishable_QOFPHVDAgI2dNr977BREvw_ga_HMzuE";*/
-
-const supabaseUrl = 'https://cesffaiaxrwoomuttlza.supabase.co/rest/v1/'; // NO /rest/v1 at the end!
+const supabaseUrl = 'https://cesffaiaxrwoomuttlza.supabase.co'; 
 const supabaseKey = 'sb_publishable_QOFPHVDAgI2dNr977BREvw_ga_HMzuE';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-
-
+// Renamed variable to 'sb' so it matches all your calls (sb.from) below
+const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
 console.log("Supabase connected");
 
@@ -19,7 +15,6 @@ console.log("Supabase connected");
 // =========================
 
 async function login() {
-
     console.log("LOGIN BUTTON CLICKED");
 
     const username = document.getElementById("username").value.trim();
@@ -33,12 +28,7 @@ async function login() {
     console.log("Query Result:", data);
     console.log("Error:", error);
 
-    if (error) {
-        alert("Login Denied");
-        return;
-    }
-
-    if (!data || data.length === 0) {
+    if (error || !data || data.length === 0) {
         alert("Login Denied");
         return;
     }
@@ -46,7 +36,6 @@ async function login() {
     const user = data[0];
 
     if (user.Password === password) {
-
         alert("Login OK");
 
         sessionStorage.setItem("userId", user.id);
@@ -54,57 +43,25 @@ async function login() {
         sessionStorage.setItem("name", user.Name);
 
         window.location.href = "scorer.html";
-
     } else {
-
         alert("Login Denied");
-
     }
 }
+
 function logout() {
-
     sessionStorage.clear();
-
     window.location.href = "index.html";
-
 }
-function continueAsGuest() {
 
+function continueAsGuest() {
     sessionStorage.setItem("guestMode", "true");
     window.location.href = "scoreboard.html";
-
 }
-function logoutGuest() {
 
+function logoutGuest() {
     sessionStorage.clear();
     window.location.href = "index.html";
-
 }
-
- async function loadScore() {
-
-            const { data, error } = await sb
-                .from("scores")
-                .select("*")
-                .eq("match_id", currentMatchId)
-                .single();
-
-            if (error) {
-                console.error(error);
-                return;
-            }
-
-            document.getElementById("scoreA").textContent =
-                data.team_a_score || 0;
-
-            document.getElementById("scoreB").textContent =
-                data.team_b_score || 0;
-        }
-
-        loadScore();
-
-        setInterval(loadScore, 3000);
-
 
 // =========================
 // Volleyball Scoring
@@ -114,7 +71,6 @@ let scoreA = 0;
 let scoreB = 0;
 
 function updateDisplay() {
-
     const scoreAElement = document.getElementById("scoreA");
     const scoreBElement = document.getElementById("scoreB");
 
@@ -126,33 +82,18 @@ function updateDisplay() {
     scoreBElement.textContent = scoreB;
 }
 
-
-
 async function changeScore(team, amount) {
+    if (team === "A") scoreA += amount;
+    if (team === "B") scoreB += amount;
 
-    if (team === "A") {
-        scoreA += amount;
-    }
-
-    if (team === "B") {
-        scoreB += amount;
-    }
-
-    if (scoreA < 0) {
-        scoreA = 0;
-    }
-
-    if (scoreB < 0) {
-        scoreB = 0;
-    }
+    if (scoreA < 0) scoreA = 0;
+    if (scoreB < 0) scoreB = 0;
 
     updateDisplay();
-
     await saveScore();
 }
 
 function resetScores() {
-
     scoreA = 0;
     scoreB = 0;
 
@@ -167,7 +108,6 @@ function resetScores() {
 const currentMatchId = 1;
 
 async function loadScore() {
-
     const { data, error } = await sb
         .from("scores")
         .select("*")
@@ -188,7 +128,6 @@ async function loadScore() {
 }
 
 async function saveScore() {
-
     const { error } = await sb
         .from("scores")
         .update({
@@ -218,9 +157,7 @@ window.resetScores = resetScores;
 // Load Score Only On Scorer Page
 // =========================
 
-if (
-    document.getElementById("scoreA") &&
-    document.getElementById("scoreB")
-) {
+if (document.getElementById("scoreA") && document.getElementById("scoreB")) {
     loadScore();
+    setInterval(loadScore, 3000);
 }
