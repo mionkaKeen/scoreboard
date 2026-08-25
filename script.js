@@ -1,70 +1,181 @@
+javascript
 // =========================
-// Supabase Connection
+// Firebase
 // =========================
 
-const supabaseUrl = 'https://cesffaiaxrwoomuttlza.supabase.co'; 
-const supabaseKey = 'sb_publishable_QOFPHVDAgI2dNr977BREvw_ga_HMzuE';
+import { auth, db } from "./firebase.js";
 
-// Change 'const supabase =' to 'const sb ='
-const sb = supabase.createClient(supabaseUrl, supabaseKey);
+import {
+    signInWithEmailAndPassword,
+    signOut
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
-console.log("Supabase connected");
+import {
+    doc,
+    getDoc,
+    updateDoc
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
 
 // =========================
 // Login Functions
 // =========================
 
 async function login() {
+
     console.log("LOGIN BUTTON CLICKED");
 
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
 
-    // Changed "Users" to "USERS" to match the Supabase schema cache
-    const { data, error } = await sb
-        .from("USERS") 
-        .select("*")
-        .eq("username", username);
-
-    console.log("Query Result:", data);
-    console.log("Error:", error);
-
-    if (error || !data || data.length === 0) {
-        alert("Login Denied");
+    if (!username || !password) {
+        alert("Please enter a username and password.");
         return;
     }
 
-    const user = data[0];
+    try {
 
-    // NOTE: Ensure your database column is exactly "Password" (case-sensitive)
-    if (user.Password === password) {
+        // Firebase Authentication uses email/password.
+        // If your username is actually an email address,
+        // this will work directly.
+
+        const userCredential =
+            await signInWithEmailAndPassword(
+                auth,
+                username,
+                password
+            );
+
+        const user = userCredential.user;
+
+        console.log("Firebase Login:", user);
+
+
+        // =========================
+        // Get User Information
+        // =========================
+
+        const userRef = doc(
+            db,
+            "USERS",
+            user.uid
+        );
+
+        const userSnapshot = await getDoc(userRef);
+
+        if (!userSnapshot.exists()) {
+
+            console.error("User profile not found.");
+
+            await signOut(auth);
+
+            alert("Login Denied");
+            return;
+        }
+
+        const userData = userSnapshot.data();
+
+        console.log("User Data:", userData);
+
+
+        // =========================
+        // Check Admin
+        // =========================
+
+        if (userData.role !== "admin") {
+
+            await signOut(auth);
+
+            alert("Admin access required.");
+            return;
+        }
+
+
+        // =========================
+        // Save Session Information
+        // =========================
+
+        sessionStorage.setItem(
+            "userId",
+            user.uid
+        );
+
+        sessionStorage.setItem(
+            "username",
+            userData.username || username
+        );
+
+        sessionStorage.setItem(
+            "name",
+            userData.Name || ""
+        );
+
+        sessionStorage.setItem(
+            "role",
+            userData.role || ""
+        );
+
+
+        // =========================
+        // Login Successful
+        // =========================
+
         alert("Login OK");
 
-        sessionStorage.setItem("userId", user.id);
-        sessionStorage.setItem("username", user.username);
-        // Ensure "Name" matches the database column case as well
-        sessionStorage.setItem("name", user.Name); 
-
         window.location.href = "scorer.html";
-    } else {
+
+    } catch (error) {
+
+        console.error("Login Error:", error);
+
         alert("Login Denied");
     }
 }
 
-function logout() {
-    sessionStorage.clear();
-    window.location.href = "index.html";
+
+// =========================
+// Logout
+// =========================
+
+async function logout() {
+
+    try {
+
+        await signOut(auth);
+
+        sessionStorage.clear();
+
+        window.location.href = "index.html";
+
+    } catch (error) {
+
+        console.error("Logout Error:", error);
+    }
 }
 
+
+// =========================
+// Guest Mode
+// =========================
+
 function continueAsGuest() {
-    sessionStorage.setItem("guestMode", "true");
+
+    sessionStorage.setItem(
+        "guestMode",
+        "true"
+    );
+
     window.location.href = "scoreboard.html";
 }
 
+
 function logoutGuest() {
+
     sessionStorage.clear();
+
     window.location.href = "index.html";
 }
+
 
 // =========================
 // Volleyball Scoring
@@ -73,94 +184,228 @@ function logoutGuest() {
 let scoreA = 0;
 let scoreB = 0;
 
+
+// =========================
+// Update Display
+// =========================
+
 function updateDisplay() {
-    const scoreAElement = document.getElementById("scoreA");
-    const scoreBElement = document.getElementById("scoreB");
+
+    const scoreAElement =
+        document.getElementById("scoreA");
+
+    const scoreBElement =
+        document.getElementById("scoreB");
+
 
     if (!scoreAElement || !scoreBElement) {
         return;
     }
 
+
     scoreAElement.textContent = scoreA;
     scoreBElement.textContent = scoreB;
 }
 
-async function changeScore(team, amount) {
-    if (team === "A") scoreA += amount;
-    if (team === "B") scoreB += amount;
 
-    if (scoreA < 0) scoreA = 0;
-    if (scoreB < 0) scoreB = 0;
+// =========================
+// Change Score
+// =========================
+
+async function changeScore(team, amount) {
+
+    if (team === "A") {
+        scoreA += amount;
+    }
+
+    if (team === "B") {
+        scoreB += amount;
+    }
+
+
+    // Prevent negative scores
+
+    if (scoreA < 0) {
+        scoreA = 0;
+    }
+
+    if (scoreB < 0) {
+        scoreB = 0;
+    }
+
 
     updateDisplay();
+
     await saveScore();
 }
 
-function resetScores() {
+
+// =========================
+// Reset Scores
+// =========================
+
+async function resetScores() {
+
     scoreA = 0;
     scoreB = 0;
 
     updateDisplay();
-    saveScore();
+
+    await saveScore();
 }
 
+
 // =========================
-// Supabase Score Storage
+// Firebase Score Storage
 // =========================
 
-const currentMatchId = 1;
+// Instead of:
+// const currentMatchId = 1;
+
+const currentMatchId = "match_1";
+
+
+// =========================
+// Load Score
+// =========================
 
 async function loadScore() {
-    const { data, error } = await sb
-        .from("scores")
-        .select("*")
-        .eq("match_id", currentMatchId)
-        .single();
 
-    if (error) {
-        console.error(error);
-        return;
+    try {
+
+        const scoreRef = doc(
+            db,
+            "scores",
+            currentMatchId
+        );
+
+        const scoreSnapshot =
+            await getDoc(scoreRef);
+
+
+        if (!scoreSnapshot.exists()) {
+
+            console.log(
+                "No score found."
+            );
+
+            scoreA = 0;
+            scoreB = 0;
+
+            updateDisplay();
+
+            return;
+        }
+
+
+        const data =
+            scoreSnapshot.data();
+
+
+        console.log(
+            "Score Loaded:",
+            data
+        );
+
+
+        scoreA =
+            data.team_a_score || 0;
+
+        scoreB =
+            data.team_b_score || 0;
+
+
+        updateDisplay();
+
+    } catch (error) {
+
+        console.error(
+            "Error loading score:",
+            error
+        );
     }
-
-    console.log("Score Loaded:", data);
-
-    scoreA = data.team_a_score || 0;
-    scoreB = data.team_b_score || 0;
-
-    updateDisplay();
 }
+
+
+// =========================
+// Save Score
+// =========================
 
 async function saveScore() {
-    const { error } = await sb
-        .from("scores")
-        .update({
-            team_a_score: scoreA,
-            team_b_score: scoreB
-        })
-        .eq("match_id", currentMatchId);
 
-    if (error) {
-        console.error(error);
-        return;
+    try {
+
+        const scoreRef = doc(
+            db,
+            "scores",
+            currentMatchId
+        );
+
+
+        await updateDoc(
+            scoreRef,
+            {
+                team_a_score: scoreA,
+                team_b_score: scoreB
+            }
+        );
+
+
+        console.log(
+            "Score Saved"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Error saving score:",
+            error
+        );
     }
-
-    console.log("Score Saved");
 }
+
 
 // =========================
 // Make Functions Global
 // =========================
+//
+// Because script.js is now a module,
+// HTML onclick="..." cannot automatically
+// see these functions.
+//
+// Therefore we attach them to window.
 
 window.login = login;
-window.continueAsGuest = continueAsGuest;
-window.changeScore = changeScore;
-window.resetScores = resetScores;
+
+window.logout = logout;
+
+window.continueAsGuest =
+    continueAsGuest;
+
+window.logoutGuest =
+    logoutGuest;
+
+window.changeScore =
+    changeScore;
+
+window.resetScores =
+    resetScores;
+
 
 // =========================
 // Load Score Only On Scorer Page
 // =========================
 
-if (document.getElementById("scoreA") && document.getElementById("scoreB")) {
+if (
+    document.getElementById("scoreA") &&
+    document.getElementById("scoreB")
+) {
+
     loadScore();
-    setInterval(loadScore, 3000);
+
+    setInterval(
+        loadScore,
+        3000
+    );
 }
+```
